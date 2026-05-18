@@ -34,19 +34,19 @@ export default function VideoMeetComponent() {
 
     let [audioAvailable, setAudioAvailable] = useState(true);
 
-    let [video, setVideo] = useState([false]);
+    let [video, setVideo] = useState([true]);
 
     let [mediaRecorder, setMediaRecorder] = useState(null);
     
     let [recording, setRecording] = useState(false);
 
-    let [audio, setAudio] = useState();
+    let [audio, setAudio] = useState(true);
 
-    let [screen, setScreen] = useState();
+    let [screen, setScreen] = useState(false);
 
     let [showModal, setModal] = useState(true);
 
-    let [screenAvailable, setScreenAvailable] = useState();
+    let [screenAvailable, setScreenAvailable] = useState(false);
 
     let [messages, setMessages] = useState([])
 
@@ -125,21 +125,31 @@ export default function VideoMeetComponent() {
         }
     };
 
-    useEffect(() => {
-        if (video !== undefined && audio !== undefined) {
-            getUserMedia();
-            console.log("SET STATE HAS ", video, audio);
+    
+    let getMedia = async () => {
 
+    try {
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: videoAvailable,
+            audio: audioAvailable
+        });
+
+        window.localStream = stream;
+
+        if (localVideoref.current) {
+            localVideoref.current.srcObject = stream;
         }
 
-
-    }, [video, audio])
-    let getMedia = () => {
         setVideo(videoAvailable);
         setAudio(audioAvailable);
+
         connectToSocketServer();
 
+    } catch (e) {
+        console.log(e);
     }
+}
 
 
 
